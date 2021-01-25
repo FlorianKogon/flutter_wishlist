@@ -32,6 +32,15 @@ class DataBaseClient {
     id INTEGER PRIMARY KEY, 
     nom TEXT NOT NULL)
     ''');
+    await db.execute('''
+    CREATE TABLE article (
+    id INTEGER PRIMARY KEY,
+    nom TEXT NOT NULL,
+    item INTEGER,
+    prix TEXT,
+    magasin TEXT,
+    imagePath TEXT)
+    ''');
   }
 
   //ECRITURE DES DONNEES
