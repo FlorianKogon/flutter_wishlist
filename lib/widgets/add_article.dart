@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter_wishlist/models/article.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_wishlist/models/dataBaseClient.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Add extends StatefulWidget {
   int id;
@@ -69,11 +70,11 @@ class _AddState extends State<Add> {
                       children: [
                         IconButton(
                             icon: Icon(Icons.camera_enhance),
-                            onPressed: null
+                            onPressed: () => getImage(ImageSource.camera)
                         ),
                         IconButton(
                             icon: Icon(Icons.photo_library),
-                            onPressed: null
+                            onPressed: () => getImage(ImageSource.gallery)
                         ),
                       ],
                     ),
@@ -132,6 +133,18 @@ class _AddState extends State<Add> {
       nom = null,
       magasin = null,
       Navigator.pop(context)
+    });
+  }
+
+  Future getImage(ImageSource imageSource) async {
+    final _picker = ImagePicker();
+    final pickedFile = await _picker.getImage(source: ImageSource.camera);
+    setState(() {
+      if (pickedFile != null) {
+        imagePath = File(pickedFile.path).toString();
+      } else {
+        print('No image selected.');
+      }
     });
   }
 
