@@ -40,6 +40,26 @@ class DataBaseClient {
     item.id = await myDatabase.insert('item', item.toMap());
     return item;
   }
+  
+  Future<int> deleteItem(int id, String table) async {
+    Database myDatabase = await database;
+    return await myDatabase.delete(table, where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<int> updateItem(Item item) async {
+    Database myDatabse = await database;
+    return myDatabse.update('item', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
+  }
+
+  Future<Item> upsertItem(Item item) async {
+    Database myDatabase = await database;
+    if (item.id == null) {
+      item.id = await myDatabase.insert('item', item.toMap());
+    } else {
+      await myDatabase.update('item', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
+    }
+    return item;
+  }
 
   //LECTURE DES DONNEES
   Future<List<Item>> getAllItems() async {

@@ -6,6 +6,7 @@ class EmptyData extends StatelessWidget {
     return Center(
       child: Text("Aucune donnée n'est présente",
       textScaleFactor: 2.5,
+        textAlign: TextAlign.center,
         style: TextStyle(
           color: Colors.red,
           fontStyle: FontStyle.italic

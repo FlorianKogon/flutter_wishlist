@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_wishlist/models/dataBaseClient.dart';
 import 'package:flutter_wishlist/models/item.dart';
 import 'empty_data.dart';
+import 'item_details.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -18,13 +19,20 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Item> items = [];
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    get();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
           IconButton(
-            onPressed: addList,
+            onPressed: () => addList(null),
             icon: Icon(
               Icons.add
             ),
@@ -38,10 +46,28 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ListView.builder(
           itemCount: items.length,
           itemBuilder: (context, i) {
+            Item item = items[i];
             return ListTile(
-              leading: Icon(Icons.edit),
-              title: Text(items[i].nom),
-              trailing: Icon(Icons.delete),
+              leading:
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () => addList(item)
+                ),
+              title: InkWell(
+               child: Text(item.nom),
+               onTap: () {
+                 Navigator.push(context, MaterialPageRoute(builder: (BuildContext buildContext) {
+                     return ItemDetail(item);
+                 }));
+               },
+              ),
+              trailing:
+                IconButton(icon: Icon(Icons.delete),
+                onPressed: () {
+                  DataBaseClient().deleteItem(item.id, 'item').then((int) {
+                    get();
+                  });
+                }),
             );
           },
         ),
@@ -49,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future<Null> addList() async {
+  Future<Null> addList(Item item) async {
     await showDialog(
       context: context,
       barrierDismissible: false,
@@ -59,9 +85,9 @@ class _MyHomePageState extends State<MyHomePage> {
           content: TextField(
             decoration: InputDecoration(
               labelText: 'Nommez votre liste',
-              hintText: 'ex : mes prochains achats',
+              hintText: (item == null) ? 'ex : mes prochains achats' : item.nom,
             ),
-            onSubmitted: (String string) {
+            onChanged: (String string) {
               wishlist = string;
             },
           ),
@@ -74,7 +100,20 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             FlatButton(
-              onPressed: () => Navigator.pop(buildContext),
+              onPressed: () {
+                if (wishlist != null) {
+                  if (item == null) {
+                    item = Item();
+                    Map<String, dynamic> map = {"nom" : wishlist};
+                    item.fromMap(map);
+                  } else {
+                    item.nom = wishlist;
+                  }
+                  DataBaseClient().upsertItem(item).then((i) => get());
+                  wishlist = null;
+                }
+                Navigator.pop(buildContext);
+              },
               color: Colors.teal,
               child: Text(
                 'Validez'
@@ -84,5 +123,14 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       }
     );
+  }
+
+  void get() {
+    DataBaseClient().getAllItems().then((items) {
+      setState(() {
+        this.items = items;
+        print(items);
+      });
+    });
   }
 }
