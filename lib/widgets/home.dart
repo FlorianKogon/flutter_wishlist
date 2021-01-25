@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_wishlist/models/dataBaseClient.dart';
+import 'package:flutter_wishlist/models/item.dart';
+import 'empty_data.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -12,8 +15,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   String wishlist;
-
-  List listWishlist = [];
+  List<Item> items = [];
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +31,16 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: Center(
+      body: (items.length == 0 || items == null) ?
+      EmptyData()
+      :
+      Center(
         child: ListView.builder(
-          itemCount: listWishlist.length,
+          itemCount: items.length,
           itemBuilder: (context, i) {
             return ListTile(
               leading: Icon(Icons.edit),
-              title: Text(listWishlist[i]),
+              title: Text(items[i].nom),
               trailing: Icon(Icons.delete),
             );
           },
