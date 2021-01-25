@@ -1,6 +1,6 @@
 class Article {
   int id;
-  String name;
+  String nom;
   int item;
   var prix;
   String magasin;
@@ -10,7 +10,7 @@ class Article {
 
   void fromMap(Map<String, dynamic> map) {
     this.id = map['id'];
-    this.name = map['name'];
+    this.nom = map['nom'];
     this.item = map['item'];
     this.prix = map['prix'];
     this.magasin = map['magasin'];
@@ -19,7 +19,7 @@ class Article {
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {
-      'nom' : this.name,
+      'nom' : this.nom,
       'item' : this.item,
       'magasin' : this.magasin,
       'prix' : this.prix,

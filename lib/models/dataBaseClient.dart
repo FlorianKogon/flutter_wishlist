@@ -3,6 +3,7 @@ import 'package:flutter_wishlist/models/item.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'article.dart';
 
 class DataBaseClient {
 
@@ -52,12 +53,13 @@ class DataBaseClient {
   
   Future<int> deleteItem(int id, String table) async {
     Database myDatabase = await database;
+    await myDatabase.delete('article', where: 'item = ?', whereArgs: [id]);
     return await myDatabase.delete(table, where: 'id = ?', whereArgs: [id]);
   }
 
   Future<int> updateItem(Item item) async {
-    Database myDatabse = await database;
-    return myDatabse.update('item', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
+    Database myDatabase = await database;
+    return myDatabase.update('item', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
   }
 
   Future<Item> upsertItem(Item item) async {
@@ -68,6 +70,15 @@ class DataBaseClient {
       await myDatabase.update('item', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
     }
     return item;
+  }
+
+  Future<Article> upsertArticle(Article article) async {
+    Database myDatabase = await database;
+    (article.id == null) ?
+      article.id = await myDatabase.insert('article', article.toMap())
+        :
+      await myDatabase.update('article', article.toMap(), where: 'id = ?', whereArgs: [article.id]);
+    return article;
   }
 
   //LECTURE DES DONNEES
@@ -81,6 +92,18 @@ class DataBaseClient {
       items.add(item);
     });
     return items;
+  }
+
+  Future<List<Article>> getAllArticles(int item) async {
+    Database myDatabase = await database;
+    List<Map<String, dynamic>> results = await myDatabase.query('article', where: 'item = ?', whereArgs: [item]);
+    List<Article> articles = [];
+    results.forEach((map) {
+      Article article = Article();
+      article.fromMap(map);
+      articles.add(article);
+    });
+    return articles;
   }
 
 }
