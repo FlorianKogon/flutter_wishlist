@@ -129,7 +129,6 @@ class _MyHomePageState extends State<MyHomePage> {
     DataBaseClient().getAllItems().then((items) {
       setState(() {
         this.items = items;
-        print(items);
       });
     });
   }
